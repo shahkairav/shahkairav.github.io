@@ -38,6 +38,30 @@ A claim.<Sidenote>An aside in the margin.</Sidenote>
 <Proof>Argument.</Proof>
 ```
 
+### Tufte components
+
+Adapted from [Tufte CSS](https://github.com/edwardtufte/tufte-css), set in the site's own type and colours:
+
+```mdx
+<Epigraph by="Joseph Fourier" source="The Analytical Theory of Heat">Quotation.</Epigraph>
+
+<NewThought>Opening words</NewThought> of a paragraph that turns the argument.
+
+Text.<MarginFigure number={2} caption="Caption."><svg …/></MarginFigure> More text.
+
+<Figure number={3} caption="Caption sits in the margin."><img src="/…" alt="…" /></Figure>
+<Figure wide caption="Spans text and margin; caption below."><img … /></Figure>
+
+<Wide>
+
+| A table or code block | that runs into the margin |
+| --- | --- |
+
+</Wide>
+```
+
+Use `<Fragment slot="caption">…</Fragment>` instead of `caption="…"` when a caption needs math. `<Sidenote margin>` gives an un-numbered margin note.
+
 Theorem kinds: `definition`, `theorem`, `lemma`, `proposition`, `corollary`, `example`, `remark` (each numbered separately). Interactive figures are Astro components with a `<script>`; `src/components/RandomWalk.astro` is the model to copy.
 
 Entries marked `# PLACEHOLDER` in their front matter are sample content to replace.

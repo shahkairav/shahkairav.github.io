@@ -1,0 +1,29 @@
+---
+/**
+ * A small figure in the right margin, beside the paragraph it sits in.
+ * Put it inside the paragraph, before the sentence it illustrates. On narrow
+ * screens it drops into the text column.
+ *
+ *   Text.<MarginFigure caption="What it shows."><svg …/></MarginFigure> More text.
+ *
+ * Use the `caption` slot instead of the prop when the caption needs math or markup.
+ */
+interface Props {
+  caption?: string;
+  number?: number;
+}
+const { caption, number } = Astro.props;
+const hasCaption = caption !== undefined || Astro.slots.has('caption') || number !== undefined;
+---
+
+<span class="marginfig" role="figure">
+  <span class="mf-body"><slot /></span>
+  {
+    hasCaption && (
+      <span class="mf-caption">
+        {number !== undefined && <b>Figure {number}.&ensp;</b>}
+        <slot name="caption">{caption}</slot>
+      </span>
+    )
+  }
+</span>

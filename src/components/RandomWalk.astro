@@ -14,7 +14,15 @@ const W = compact ? 480 : 660;
 const H = compact ? 300 : 280;
 ---
 
-<figure class="figure random-walk" data-paths={paths} data-steps={steps} data-w={W} data-h={H}>
+<figure class:list={['figure random-walk', { 'caption-margin': !compact }]} data-paths={paths} data-steps={steps} data-w={W} data-h={H}>
+  <figcaption>
+    {number !== undefined && <b>Figure {number}.&ensp;</b>}
+    <slot>
+      {compact
+        ? 'Five paths of a symmetric random walk. Rescaled, they converge to Brownian motion.'
+        : `${paths} paths of a symmetric random walk, ${steps} steps each. The dashed curves mark ±2√n, inside which about 95% of paths lie at each step.`}
+    </slot>
+  </figcaption>
   <div class="plate">
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${paths} sample paths of a symmetric random walk`}>
       <path d={`M0 ${H / 2} H${W}`} style="fill: none; stroke: var(--rule); stroke-width: 1;"></path>
@@ -35,14 +43,6 @@ const H = compact ? 300 : 280;
       </div>
     )}
   </div>
-  <figcaption>
-    {number !== undefined && <b>Figure {number}.&ensp;</b>}
-    <slot>
-      {compact
-        ? 'Five paths of a symmetric random walk. Rescaled, they converge to Brownian motion.'
-        : `${paths} paths of a symmetric random walk, ${steps} steps each. The dashed curves mark ±2√n, inside which about 95% of paths lie at each step.`}
-    </slot>
-  </figcaption>
 </figure>
 
 <script>

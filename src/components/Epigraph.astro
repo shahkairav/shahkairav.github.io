@@ -1,0 +1,27 @@
+---
+/**
+ * An opening quotation, set before the first paragraph (Tufte CSS's epigraph).
+ *
+ *   <Epigraph by="Henri Poincaré" source="Science and Hypothesis">
+ *   The quotation itself.
+ *   </Epigraph>
+ */
+interface Props {
+  by?: string;
+  source?: string;
+}
+const { by, source } = Astro.props;
+---
+
+<figure class="epigraph">
+  <blockquote><slot /></blockquote>
+  {
+    (by || source) && (
+      <figcaption>
+        {by}
+        {by && source && ', '}
+        {source && <cite>{source}</cite>}
+      </figcaption>
+    )
+  }
+</figure>

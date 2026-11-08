@@ -12,6 +12,14 @@ import Theorem from '../../components/Theorem.astro';
 import Proof from '../../components/Proof.astro';
 import PullQuote from '../../components/PullQuote.astro';
 import RandomWalk from '../../components/RandomWalk.astro';
+import Epigraph from '../../components/Epigraph.astro';
+import NewThought from '../../components/NewThought.astro';
+import MarginFigure from '../../components/MarginFigure.astro';
+import Wide from '../../components/Wide.astro';
+
+<Epigraph by="Joseph Fourier" source="The Analytical Theory of Heat">
+Primary causes are unknown to us; but are subject to simple and constant laws, which may be discovered by observation.
+</Epigraph>
 
 <p class="dropcap">In 1900, five years before Einstein explained Brownian motion, a doctoral student in Paris named Louis Bachelier modelled the price of French government bonds as a random walk.<Sidenote>Bachelier, *Théorie de la spéculation* (1900). The thesis received the mention *honorable*: respectable, but not the *très honorable* that opened academic doors.</Sidenote> His examiners, Poincaré among them, were more impressed by the mathematics than by the subject. Seventy-three years later Fischer Black and Myron Scholes published the formula that bears their names, and readers noticed something odd: the equation at its heart was one physicists had known for a century and a half.</p>
 
@@ -31,7 +39,7 @@ $$
 \frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + rS\frac{\partial V}{\partial S} - rV = 0, \tag{1}
 $$
 
-where $\sigma$ is the volatility and $r$ the risk-free rate. The payoff at expiry $T$ is supplied as a terminal condition; for a call struck at $K$, it is $V(S, T) = \max(S - K, 0)$.
+where $\sigma$ is the volatility and $r$ the risk-free rate. <MarginFigure number={2}><svg viewBox="0 0 240 140" role="img" aria-label="A call option's payoff, a hinge at the strike, and its value a year before expiry, a smooth curve lying above it"><path d="M20 130 H230" style="fill:none;stroke:var(--rule);stroke-width:1"/><path d="M125 126 V134" style="fill:none;stroke:var(--muted);stroke-width:1"/><text x="125" y="139" text-anchor="middle" style="font:500 8px var(--sans);fill:var(--muted)">K</text><path d="M20 130 L125 130 L230 10" style="fill:none;stroke:var(--ink);stroke-width:1.2"/><path d="M20.0 129.6 L30.5 129.1 L41.0 128.4 L51.5 127.2 L62.0 125.5 L72.5 123.2 L83.0 120.2 L93.5 116.4 L104.0 111.8 L114.5 106.4 L125.0 100.2 L135.5 93.2 L146.0 85.5 L156.5 77.2 L167.0 68.3 L177.5 58.9 L188.0 49.0 L198.5 38.8 L209.0 28.2 L219.5 17.4 L230.0 6.4" style="fill:none;stroke:var(--accent);stroke-width:1.6"/></svg><Fragment slot="caption">The payoff of a call struck at $K$, a hinge, and its value a year before expiry at 25% volatility, the smooth curve above it.</Fragment></MarginFigure>The payoff at expiry $T$ is supplied as a terminal condition; for a call struck at $K$, it is $V(S, T) = \max(S - K, 0)$.
 
 ## A change of variables
 
@@ -62,7 +70,19 @@ def call(S, K, T, r, sigma):
 
 ## What the identity means
 
-Read the theorem backwards and the value of the option becomes a temperature. The payoff at expiry is an initial distribution of heat along an infinite rod; as we move back in time it diffuses outward, smoothing the kink of the call payoff into the familiar curve.
+<NewThought>Read the theorem backwards</NewThought> and the value of the option becomes a temperature. The payoff at expiry is an initial distribution of heat along an infinite rod; as we move back in time it diffuses outward, smoothing the kink of the call payoff into the familiar curve.
+
+<Wide>
+
+| In the rod | In the market | Under the substitution |
+| --- | --- | --- |
+| Temperature $u$ | Option value $V$ | $u = e^{r(T-t)}\,V$ |
+| Position along the rod | Log-price, shifted by drift | $x = \ln(S/K) + (r - \tfrac12\sigma^2)(T - t)$ |
+| Time since heating began | Time remaining to expiry | $\tau = \tfrac12\sigma^2(T - t)$ |
+| Initial temperature | Payoff at expiry | $u(x, 0) = \max(Ke^{x} - K, 0)$ |
+| Thermal conductivity | Variance rate | $\tfrac12\sigma^2$ |
+
+</Wide>
 
 <PullQuote>
 

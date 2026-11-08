@@ -1,0 +1,32 @@
+---
+/**
+ * A figure in the text column with its caption in the margin (Tufte's default),
+ * or a full-width figure spanning text and margin with the caption below.
+ *
+ *   <Figure number={2} caption="What it shows."><img src="/…" alt="…" /></Figure>
+ *   <Figure wide caption="…"><svg …/></Figure>
+ *
+ * Use the `caption` slot instead of the prop when the caption needs math or markup.
+ */
+interface Props {
+  caption?: string;
+  number?: number;
+  wide?: boolean;
+  /** Draw the figure on a tinted plate, like the interactive figures. */
+  plate?: boolean;
+}
+const { caption, number, wide = false, plate = false } = Astro.props;
+const hasCaption = caption !== undefined || Astro.slots.has('caption') || number !== undefined;
+---
+
+<figure class:list={['figure', { fullwidth: wide, 'caption-margin': !wide && hasCaption }]}>
+  {
+    hasCaption && (
+      <figcaption>
+        {number !== undefined && <b>Figure {number}.&ensp;</b>}
+        <slot name="caption">{caption}</slot>
+      </figcaption>
+    )
+  }
+  <div class:list={['figure-body', { plate }]}><slot /></div>
+</figure>
