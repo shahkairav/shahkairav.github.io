@@ -1,0 +1,32 @@
+---
+import { render } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import { getEssays, readingTime } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const essays = await getEssays();
+  return essays.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, newer: essays[i - 1], older: essays[i + 1] },
+  }));
+}
+
+const { entry, newer, older } = Astro.props;
+const { Content, headings } = await render(entry);
+const { title, dek, date, tags } = entry.data;
+---
+
+<Article
+  section="essays"
+  title={title}
+  dek={dek}
+  kicker={['Essay', ...tags].join(' · ')}
+  date={date}
+  minutes={readingTime(entry.body)}
+  tags={tags}
+  headings={headings}
+  prev={older && { href: `/essays/${older.id}/`, title: older.data.title }}
+  next={newer && { href: `/essays/${newer.id}/`, title: newer.data.title }}
+>
+  <Content />
+</Article>

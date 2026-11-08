@@ -1,0 +1,40 @@
+---
+import { render } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import { getProjects } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const { title, summary, year, stack, tags, links, cover, coverAlt } = entry.data;
+---
+
+<Article
+  section="projects"
+  title={title}
+  dek={summary}
+  kicker={`Project · ${year} · ${stack}`}
+  tags={tags}
+  headings={headings}
+>
+  {
+    cover && (
+      <figure class="figure" style="margin-top: 0;">
+        <div class="cover">
+          <img src={cover} alt={coverAlt} />
+        </div>
+      </figure>
+    )
+  }
+  <Content />
+  <div slot="end" class="links" style="margin-top: 0;">
+    {links.demo && <a href={links.demo}>Live demo</a>}
+    {links.code && <a href={links.code}>Source code</a>}
+    {links.paper && <a href={links.paper}>Paper</a>}
+    <a href="/projects/">All projects</a>
+  </div>
+</Article>

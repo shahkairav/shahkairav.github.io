@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import TagList from '../components/TagList.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import RandomWalk from '../components/RandomWalk.astro';
+import { getEssays, getNotes, getProjects, longDate, shortDate, readingTime } from '../lib/content';
+
+const essays = await getEssays();
+const notes = (await getNotes()).slice(0, 3);
+const allProjects = await getProjects();
+const featuredProjects = allProjects.filter((p) => p.data.featured);
+const projects = (featuredProjects.length ? featuredProjects : allProjects).slice(0, 2);
+
+const featured = essays.find((e) => e.data.featured) ?? essays[0];
+const recent = essays.slice(0, 5);
+---
+
+<Base home>
+  {
+    featured && (
+      <section class="wrap feature" aria-labelledby="featured-title">
+        <div>
+          <p class="label" style="margin: 0 0 20px; color: var(--accent);">Featured essay</p>
+          <h2 id="featured-title">
+            <a class="plain" href={`/essays/${featured.id}/`}>{featured.data.title}</a>
+          </h2>
+          <p class="dek">{featured.data.dek}</p>
+          <p class="meta">
+            {longDate(featured.data.date)}&ensp;·&ensp;{readingTime(featured.body)} min read
+          </p>
+          <p style="margin: 32px 0 0;">
+            <a class="more" href={`/essays/${featured.id}/`}>Read the essay →</a>
+          </p>
+        </div>
+        <RandomWalk compact />
+      </section>
+    )
+  }
+
+  <div class="wrap"><hr class="divider" /></div>
+
+  <div class="wrap home-cols">
+    <section aria-labelledby="recent-title">
+      <h2 id="recent-title" class="label section-label">Recent writing</h2>
+      <ol class="entry-list">
+        {
+          recent.map((e) => (
+            <li class="entry">
+              <time datetime={e.data.date.toISOString()}>{shortDate(e.data.date)}</time>
+              <div>
+                <h3><a class="plain" href={`/essays/${e.id}/`}>{e.data.title}</a></h3>
+                <p>{e.data.dek}</p>
+                <TagList tags={e.data.tags} />
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <p style="margin: 28px 0 0;"><a class="more" href="/essays/">All essays →</a></p>
+    </section>
+
+    <aside aria-labelledby="notebook-title">
+      <h2 id="notebook-title" class="label section-label">From the notebook</h2>
+      {
+        notes.map((n) => (
+          <div class="mini-entry">
+            <time datetime={n.data.date.toISOString()}>{shortDate(n.data.date)}</time>
+            <h3><a class="plain" href={`/notes/${n.id}/`}>{n.data.title}</a></h3>
+          </div>
+        ))
+      }
+      <p style="margin: 28px 0 0;"><a class="more" href="/notes/">All notes →</a></p>
+    </aside>
+  </div>
+
+  {
+    projects.length > 0 && (
+      <>
+        <div class="wrap"><hr class="divider" /></div>
+        <section class="wrap" style="padding-top: 64px;" aria-labelledby="projects-title">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 24px; margin-bottom: 32px; flex-wrap: wrap;">
+            <h2 id="projects-title" class="label" style="margin: 0; color: var(--ink);">Selected projects</h2>
+            <a class="more" href="/projects/">All projects →</a>
+          </div>
+          <div class="project-grid compact">
+            {projects.map((p) => <ProjectCard project={p} compact />)}
+          </div>
+        </section>
+      </>
+    )
+  }
+</Base>

@@ -1,0 +1,30 @@
+---
+import { render } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import { getNotes } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, newer: notes[i - 1], older: notes[i + 1] },
+  }));
+}
+
+const { entry, newer, older } = Astro.props;
+const { Content } = await render(entry);
+const { title, date, tags } = entry.data;
+---
+
+<Article
+  section="notes"
+  light
+  title={title}
+  kicker="Note"
+  date={date}
+  tags={tags}
+  prev={older && { href: `/notes/${older.id}/`, title: older.data.title }}
+  next={newer && { href: `/notes/${newer.id}/`, title: newer.data.title }}
+>
+  <Content />
+</Article>

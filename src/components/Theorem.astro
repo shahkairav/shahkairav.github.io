@@ -1,0 +1,23 @@
+---
+/**
+ * Numbered mathematical environment.
+ *
+ *   <Theorem kind="definition" title="The heat equation"> … </Theorem>
+ *
+ * Numbering is automatic and separate for each kind within a post.
+ */
+const KINDS = ['definition', 'theorem', 'lemma', 'proposition', 'corollary', 'example', 'remark'] as const;
+type Kind = (typeof KINDS)[number];
+
+interface Props {
+  kind?: Kind;
+  title?: string;
+}
+const { kind = 'theorem', title } = Astro.props;
+const label = kind.charAt(0).toUpperCase() + kind.slice(1);
+---
+
+<div class={`thm thm-${kind}`} role="group" aria-label={title ? `${label}: ${title}` : label}>
+  <p class="thm-label label"><span class="thm-kind">{label}</span>{title && <>&ensp;·&ensp;{title}</>}</p>
+  <div class="thm-body"><slot /></div>
+</div>

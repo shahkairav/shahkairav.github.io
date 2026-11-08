@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site';
+---
+
+<Base title="About" section="about" description="About Invariants and its author, Kairav Shah, with a colophon on how the site is made.">
+  <article class="article light">
+    <header class="article-head">
+      <p class="kicker label">About</p>
+      <h1>About Invariants</h1>
+    </header>
+    <div class="prose">
+      <p class="dropcap">
+        An invariant is what survives a transformation: the quantity conserved through a collision, the property a loop preserves
+        on every pass, the idea that outlasts the argument first made for it. This publication collects attempts to find a few
+        of them in mathematics, physics, philosophy, computation and markets.
+      </p>
+      <p>
+        <em>[Placeholder — replace with your bio.]</em> I’m {SITE.author}. Write two or three sentences here about who you are,
+        what you work on, and why you write.
+      </p>
+      <p>
+        Elsewhere: <a href={SITE.github}>GitHub</a>.
+      </p>
+
+      <h2 id="colophon">Colophon</h2>
+      <p>
+        Text is set in <em>Newsreader</em>, a typeface by Production Type designed for on-screen reading, with optical sizes that
+        sharpen headlines and steady the body. Labels and navigation are set in <em>Inter</em> by Rasmus Andersson, and code in
+        <em>IBM Plex Mono</em>. Mathematics is typeset with KaTeX when the site is built, so equations never shift as a page loads.
+      </p>
+      <p>
+        The site is built with <a href="https://astro.build">Astro</a>, searched with <a href="https://pagefind.app">Pagefind</a>,
+        and hosted on GitHub Pages. It uses no cookies, no analytics and no trackers. Its palette is warm paper and ink, with a
+        single oxblood accent.
+      </p>
+    </div>
+  </article>
+</Base>

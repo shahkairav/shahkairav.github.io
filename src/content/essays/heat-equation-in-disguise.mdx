@@ -1,0 +1,73 @@
+---
+# PLACEHOLDER — a sample essay that exercises every feature. Replace or delete.
+title: The Heat Equation in Disguise
+dek: How a change of variables turns the Black–Scholes equation into the oldest equation in mathematical physics, and what that says about prices.
+date: 2026-11-07
+tags: [options, PDEs, stochastic calculus]
+featured: true
+---
+
+import Sidenote from '../../components/Sidenote.astro';
+import Theorem from '../../components/Theorem.astro';
+import Proof from '../../components/Proof.astro';
+import PullQuote from '../../components/PullQuote.astro';
+import RandomWalk from '../../components/RandomWalk.astro';
+
+<p class="dropcap">In 1900, five years before Einstein explained Brownian motion, a doctoral student in Paris named Louis Bachelier modelled the price of French government bonds as a random walk.<Sidenote>Bachelier, *Théorie de la spéculation* (1900). The thesis received the mention *honorable*: respectable, but not the *très honorable* that opened academic doors.</Sidenote> His examiners, Poincaré among them, were more impressed by the mathematics than by the subject. Seventy-three years later Fischer Black and Myron Scholes published the formula that bears their names, and readers noticed something odd: the equation at its heart was one physicists had known for a century and a half.</p>
+
+The resemblance is not a coincidence, and it is not merely formal. It is the same mathematics describing the same phenomenon: the spreading of uncertainty through time. This essay works through the change of variables that makes the identity exact, and then asks what we learn by taking it seriously.
+
+## A walk without memory
+
+Begin with a coin. Each second, a particle steps one unit up or down with equal probability. After $n$ steps its position has mean zero and variance $n$, so its typical distance from the origin grows like $\sqrt{n}$, not $n$.<Sidenote>This is the central limit theorem in its simplest form: a sum of $n$ independent $\pm 1$ steps, divided by $\sqrt{n}$, is approximately standard normal.</Sidenote> That square root is the signature of diffusion: of heat, of ink in water and, Bachelier argued, of prices.
+
+<RandomWalk number={1} />
+
+## The pricing equation
+
+Under the usual assumptions,<Sidenote>Constant volatility and interest rate, continuous trading, no transaction costs, and a stock following geometric Brownian motion. None of these is true; how useful the model is remains a separate question.</Sidenote> the value $V(S, t)$ of a European option on a stock with price $S$ at time $t$ satisfies
+
+$$
+\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + rS\frac{\partial V}{\partial S} - rV = 0, \tag{1}
+$$
+
+where $\sigma$ is the volatility and $r$ the risk-free rate. The payoff at expiry $T$ is supplied as a terminal condition; for a call struck at $K$, it is $V(S, T) = \max(S - K, 0)$.
+
+## A change of variables
+
+<Theorem kind="definition" title="The heat equation">
+A function $u(x, \tau)$ satisfies the *heat equation* if $\dfrac{\partial u}{\partial \tau} = \dfrac{\partial^2 u}{\partial x^2}$ for all real $x$ and all $\tau > 0$.
+</Theorem>
+
+<Theorem kind="theorem" title="Reduction">
+Let $x = \ln(S/K) + (r - \tfrac12\sigma^2)(T - t)$ and $\tau = \tfrac12\sigma^2 (T - t)$, and define $u(x, \tau) = e^{r(T - t)}\, V(S, t)$. If $V$ solves (1), then $u$ solves the heat equation.<Sidenote margin>The substitution runs time backwards: $\tau = 0$ at expiry, so the terminal payoff becomes an initial condition.</Sidenote>
+</Theorem>
+
+<Proof>
+Each substitution removes one term of (1). Multiplying by the discount factor $e^{r(T-t)}$ cancels $-rV$; passing to log-price and shifting by the drift absorbs the first-derivative term; and rescaling time by $\tfrac12\sigma^2$ normalises the diffusion coefficient to one. What remains is $u_\tau = u_{xx}$.
+</Proof>
+
+Solving the heat equation with the transformed payoff as initial data, then undoing the substitutions, yields the closed form. It fits in a few lines:
+
+```python
+from math import exp, log, sqrt
+from scipy.stats import norm
+
+def call(S, K, T, r, sigma):
+    # Black–Scholes price of a European call
+    d1 = (log(S / K) + (r + sigma**2 / 2) * T) / (sigma * sqrt(T))
+    d2 = d1 - sigma * sqrt(T)
+    return S * norm.cdf(d1) - K * exp(-r * T) * norm.cdf(d2)
+```
+
+## What the identity means
+
+Read the theorem backwards and the value of the option becomes a temperature. The payoff at expiry is an initial distribution of heat along an infinite rod; as we move back in time it diffuses outward, smoothing the kink of the call payoff into the familiar curve.
+
+<PullQuote>
+
+Volatility is the thermal conductivity of the market.
+
+</PullQuote>
+
+The analogy also marks the model’s limits. Heat obeys conservation laws that prices need not, and a rod’s conductivity does not jump when the rod panics. Much of modern quantitative finance, from local and stochastic volatility to jump processes, can be read as a list of the ways in which a market is not a rod.<Sidenote>Dupire’s 1994 paper “Pricing with a Smile” recovers a local volatility surface from quoted prices: in effect, inferring a position-dependent conductivity from observed temperatures.</Sidenote>

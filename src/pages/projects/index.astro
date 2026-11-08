@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+---
+
+<Base title="Projects" section="projects" description="Simulations, tools and experiments by Kairav Shah.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Projects</h1>
+      <p>Things built to understand something better: simulations, tools and the occasional proof checked by machine.</p>
+    </header>
+    <div class="project-grid">
+      {projects.map((p) => <ProjectCard project={p} />)}
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Search" description="Search every essay, note and project on Invariants.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Search</h1>
+      <p>Every essay, note and project.</p>
+    </header>
+    <div id="search" class="search-root"></div>
+    <noscript><p class="meta">Search needs JavaScript enabled.</p></noscript>
+  </div>
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (!window.PagefindUI) {
+        document.getElementById('search').innerHTML =
+          '<p class="meta">The search index is built with the production site (npm run build).</p>';
+        return;
+      }
+      new PagefindUI({ element: '#search', showSubResults: true, showImages: false, autofocus: true });
+    });
+  </script>
+</Base>

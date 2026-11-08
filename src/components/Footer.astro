@@ -1,0 +1,13 @@
+---
+import { SITE } from '../site';
+const year = new Date().getFullYear();
+---
+
+<footer class="wrap site-footer">
+  <div class="inner">
+    <a class="wordmark" href="/">{SITE.name}</a>
+    <p>
+      Written by {SITE.author}&ensp;·&ensp;<a href="/about/">About &amp; colophon</a>&ensp;·&ensp;<a href={SITE.github}>GitHub</a>&ensp;·&ensp;© {year}
+    </p>
+  </div>
+</footer>

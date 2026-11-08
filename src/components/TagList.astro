@@ -1,0 +1,21 @@
+---
+import { slugify } from '../lib/content';
+
+interface Props {
+  tags: string[];
+  class?: string;
+}
+const { tags, class: cls = '' } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <ul class={`tags label ${cls}`}>
+      {tags.map((t) => (
+        <li>
+          <a href={`/tags/${slugify(t)}/`}>{t}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}

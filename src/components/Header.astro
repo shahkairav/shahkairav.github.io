@@ -1,0 +1,51 @@
+---
+import { NAV, SITE } from '../site';
+import Tools from './Tools.astro';
+
+interface Props {
+  home?: boolean;
+  section?: string;
+}
+const { home = false, section } = Astro.props;
+---
+
+{
+  home ? (
+    <header>
+      <div class="wrap home-util">
+        <p class="label" style="margin: 0; color: var(--muted);">
+          Est. {SITE.established}
+        </p>
+        <Tools />
+      </div>
+      <div class="wrap masthead">
+        <h1 class="wordmark">{SITE.name}</h1>
+        <div class="rule" aria-hidden="true" />
+        <p>{SITE.tagline}</p>
+      </div>
+      <nav class="wrap" aria-label="Primary">
+        <div class="nav navstrip">
+          {NAV.map((n) => (
+            <a href={n.href}>{n.label}</a>
+          ))}
+        </div>
+      </nav>
+    </header>
+  ) : (
+    <header class="topbar">
+      <a class="wordmark" href="/">
+        {SITE.name}
+      </a>
+      <div class="topbar-right">
+        <nav class="nav" aria-label="Primary">
+          {NAV.map((n) => (
+            <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>
+              {n.label}
+            </a>
+          ))}
+        </nav>
+        <Tools />
+      </div>
+    </header>
+  )
+}

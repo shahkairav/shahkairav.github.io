@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getEssays, getNotes, getProjects, shortDate, slugify } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const [essays, notes, projects] = await Promise.all([getEssays(), getNotes(), getProjects()]);
+  type Item = { kind: string; title: string; href: string; date?: Date; year?: number };
+  const map = new Map<string, { name: string; items: Item[] }>();
+  const add = (tag: string, item: Item) => {
+    const slug = slugify(tag);
+    if (!map.has(slug)) map.set(slug, { name: tag, items: [] });
+    map.get(slug)!.items.push(item);
+  };
+  essays.forEach((e) => e.data.tags.forEach((t) => add(t, { kind: 'Essay', title: e.data.title, href: `/essays/${e.id}/`, date: e.data.date })));
+  notes.forEach((n) => n.data.tags.forEach((t) => add(t, { kind: 'Note', title: n.data.title, href: `/notes/${n.id}/`, date: n.data.date })));
+  projects.forEach((p) => p.data.tags.forEach((t) => add(t, { kind: 'Project', title: p.data.title, href: `/projects/${p.id}/`, year: p.data.year })));
+  return [...map.entries()].map(([tag, { name, items }]) => ({ params: { tag }, props: { name, items } }));
+}
+
+const { name, items } = Astro.props;
+---
+
+<Base title={`Filed under “${name}”`}>
+  <div class="wrap page">
+    <header class="page-head">
+      <p class="label" style="margin: 0 0 16px; color: var(--accent);">Filed under</p>
+      <h1>{name}</h1>
+      <p><a href="/tags/">All tags</a></p>
+    </header>
+    <ol class="entry-list" style="max-width: 860px;">
+      {
+        items.map((it) => (
+          <li class="entry">
+            <time>{it.date ? shortDate(it.date) : it.year}</time>
+            <div>
+              <p class="label" style="margin: 0 0 6px; color: var(--muted);">{it.kind}</p>
+              <h3 style="margin: 0;"><a class="plain" href={it.href}>{it.title}</a></h3>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</Base>

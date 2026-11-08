@@ -1,0 +1,120 @@
+---
+import type { MarkdownHeading } from 'astro';
+import Base from './Base.astro';
+import TagList from '../components/TagList.astro';
+import { longDate, toRoman } from '../lib/content';
+import { SITE } from '../site';
+
+interface Link {
+  href: string;
+  title: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  dek?: string;
+  kicker?: string;
+  date?: Date;
+  minutes?: number;
+  tags?: string[];
+  headings?: MarkdownHeading[];
+  section: 'essays' | 'notes' | 'projects';
+  /** Light format: no contents list, no section numerals (used for notes). */
+  light?: boolean;
+  prev?: Link;
+  next?: Link;
+  extraMeta?: string;
+}
+
+const {
+  title, description, dek, kicker, date, minutes, tags = [], headings = [],
+  section, light = false, prev, next, extraMeta,
+} = Astro.props;
+
+const toc = light ? [] : headings.filter((h) => h.depth === 2);
+const meta = [SITE.author, date && longDate(date), minutes && `${minutes} min read`, extraMeta]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<Base title={title} description={description ?? dek} section={section}>
+  <article class:list={['article', { light }]}>
+    <header class="article-head">
+      {kicker && <p class="kicker label">{kicker}</p>}
+      <h1>{title}</h1>
+      {dek && <p class="dek">{dek}</p>}
+      <p class="byline meta">{meta}</p>
+    </header>
+
+    {
+      toc.length > 1 && (
+        <nav class="toc" aria-label="Contents">
+          <p class="label" style="margin: 0 0 16px; color: var(--ink);">Contents</p>
+          <ol>
+            {toc.map((h, i) => (
+              <li>
+                <a href={`#${h.slug}`}>{toRoman(i + 1)}. {h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class:list={['prose', { numbered: !light }]} data-pagefind-body>
+      <slot />
+    </div>
+
+    <footer class="article-end">
+      <div class="end-rule">
+        {tags.length > 0 && (
+          <div class="meta" style="display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;">
+            <span>Filed under</span>
+            <TagList tags={tags} />
+          </div>
+        )}
+        <slot name="end" />
+        {(prev || next) && (
+          <nav class="pager" aria-label="More">
+            {prev && (
+              <a href={prev.href}>
+                <span class="label">← Previous</span>
+                <span class="t">{prev.title}</span>
+              </a>
+            )}
+            {next && (
+              <a class="next" href={next.href}>
+                <span class="label">Next →</span>
+                <span class="t">{next.title}</span>
+              </a>
+            )}
+          </nav>
+        )}
+      </div>
+    </footer>
+  </article>
+</Base>
+
+<script>
+  // Highlight the section currently being read in the contents list.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a'));
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map(links.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            links.forEach((a) => a.classList.remove('active'));
+            byId.get(e.target.id)?.classList.add('active');
+          }
+        }
+      },
+      { rootMargin: '0px 0px -70% 0px' },
+    );
+    byId.forEach((_, id) => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+  }
+</script>

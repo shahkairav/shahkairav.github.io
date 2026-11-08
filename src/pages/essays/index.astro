@@ -1,0 +1,40 @@
+---
+import Base from '../../layouts/Base.astro';
+import TagList from '../../components/TagList.astro';
+import { getEssays, shortDate } from '../../lib/content';
+
+const essays = await getEssays();
+const years = [...new Set(essays.map((e) => e.data.date.getUTCFullYear()))];
+---
+
+<Base title="Essays" section="essays" description="Long-form essays on mathematics, physics, philosophy, computation and markets.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Essays</h1>
+      <p>Long-form pieces, written slowly. Each tries to make one idea feel inevitable.</p>
+    </header>
+    <div style="max-width: 860px;">
+      {
+        years.map((y) => (
+          <section>
+            <h2 class="year-head">{y}</h2>
+            <ol class="entry-list">
+              {essays
+                .filter((e) => e.data.date.getUTCFullYear() === y)
+                .map((e) => (
+                  <li class="entry">
+                    <time datetime={e.data.date.toISOString()}>{shortDate(e.data.date)}</time>
+                    <div>
+                      <h3><a class="plain" href={`/essays/${e.id}/`}>{e.data.title}</a></h3>
+                      <p>{e.data.dek}</p>
+                      <TagList tags={e.data.tags} />
+                    </div>
+                  </li>
+                ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</Base>

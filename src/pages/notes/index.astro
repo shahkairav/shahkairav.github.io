@@ -1,0 +1,36 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import TagList from '../../components/TagList.astro';
+import { getNotes, shortDate } from '../../lib/content';
+
+const notes = await getNotes();
+const rendered = await Promise.all(notes.map(async (n) => ({ n, Content: (await render(n)).Content })));
+---
+
+<Base title="Notes" section="notes" description="A working notebook: shorter pieces, proofs worth keeping and reading notes.">
+  <div class="wrap page">
+    <div class="log">
+      <header class="page-head">
+        <h1>Notes</h1>
+        <p>A working notebook: shorter pieces, proofs worth keeping and reading notes. Less polished than the essays, and meant to be.</p>
+      </header>
+      {
+        rendered.map(({ n, Content }) => (
+          <article class="note-entry">
+            <div>
+              <time datetime={n.data.date.toISOString()}>{shortDate(n.data.date)}</time>
+            </div>
+            <div>
+              <h2><a class="plain" href={`/notes/${n.id}/`}>{n.data.title}</a></h2>
+              <div class="prose excerpt">
+                <Content />
+              </div>
+              <TagList tags={n.data.tags} />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</Base>

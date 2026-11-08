@@ -1,0 +1,23 @@
+---
+/**
+ * A numbered sidenote. Sits in the right margin on wide screens; on narrow
+ * screens it collapses and the reader taps the number to reveal it.
+ *
+ *   Some claim.<Sidenote>The supporting aside.</Sidenote> More text.
+ *
+ * Pass `margin` for an un-numbered margin note.
+ */
+interface Props {
+  margin?: boolean;
+}
+const { margin = false } = Astro.props;
+const id = `sn-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+{
+  margin ? (
+    <><label for={id} class="sn-ref margin" aria-label="Margin note">⊕</label><input type="checkbox" id={id} class="sn-toggle" /><span class="sidenote"><slot /></span></>
+  ) : (
+    <><label for={id} class="sn-ref" aria-label="Sidenote" /><input type="checkbox" id={id} class="sn-toggle" /><span class="sidenote numbered"><slot /></span></>
+  )
+}
